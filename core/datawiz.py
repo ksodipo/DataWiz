@@ -7,7 +7,7 @@ from sklearn.cross_validation import train_test_split
 from sklearn.tree import export_graphviz
 from sklearn import preprocessing
 from random import randint
-
+from scipy import stats
 #Need to take ownership of the read process. Read either in numpy or pandas. Reading in lists is inefficient.
 #Need memory efficient way of converting list to numpy/pandas array
 
@@ -20,7 +20,7 @@ from random import randint
 
 
 class DataWiz:
-    def __init__( self,train_path=None,test_path=None,use=0, target_col=None,exclude_cols=[],pds_chunksize=0):
+    def __init__( self,train_path=None,test_path=None,use=0, target_col=None,exclude_cols=[],missing_values='fill',pds_chunksize=0):
         
         #Default settings
         self.file_path = train_path
@@ -32,6 +32,7 @@ class DataWiz:
         self.target_column = target_col
         self.exclude_columns = exclude_cols
         self.test_split = 0.2
+        self.missing_vals = missing_values 
         #Advanced Defult settings
         self.pd_chunksize = pds_chunksize
 
@@ -209,8 +210,16 @@ class DataWiz:
                     ndata = self.array[1:]
             else:
                     ndata = self.array[0:]
-                    
 
+            #Handle missing values  
+            
+            if self.missing_vals == 'fill':
+                for index,column in enumerate(self.array.columns):
+                    mode = stats.mode(ndata.loc[:][column])[0][0]
+                    ndata[column] = ndata[column].fillna(mode)
+                                          
+            elif: self.missing_vals == 'drop':
+                ndata = ndata.dropna('rows')
             
 
             for index,column in enumerate(self.array.columns):
@@ -287,7 +296,6 @@ class DataWiz:
                     csv_iter = csv.reader(open(self.test_file_path, 'rb'))
                     self.array_test = [row for row in csv_iter]
 
-            #return self.array_test
                     
 
                     
@@ -331,6 +339,14 @@ class DataWiz:
                             X_test = self.array_test[1:]
                     else:
                             q = None
+
+                    #Handle missing values
+                    if (self.missing_vals == 'fill' or self.missing_vals == 'drop' :                #Missing values shouldn't be dropped in the test set
+                        for index,column in enumerate(self.array_test.columns):
+                            mode = stats.mode(X_test.loc[:][column])[0][0]
+                            X_test[column] = X_test[column].fillna(mode)
+                                          
+                    
                     
                     for index,column in enumerate(X_test.columns):
                             if type(encoders_local[index]) != str:
