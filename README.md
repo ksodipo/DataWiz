@@ -4,8 +4,28 @@ Any data scientist would spend upwards of 50% of the time and effort in cleansin
 
 Automated data cleansing for Decision Tree models (and similar models). Supports numpy and pandas.
 
-Requires: Sklearn (plus an update to the preprocessing/label.py file) Pandas Numpy
+Requires: 
+Sklearn (plus an update to the preprocessing/label.py file) 
+Pandas 
+Numpy
 
-INSTALL
+INSTALL:
+Copy the core/datawiz.py file into your project directory and import.
 
-EXAMPLE
+EXAMPLE:
+
+import DataWiz
+
+wiz = DataWiz(train_path='../.csv' ,
+  test_path='../.csv',
+  use='numpy', 
+  target_col=-1,
+  exclude_cols=[1,2,3],
+  missing_values='fill',
+  pds_chunksize=0)
+ 
+X_clean, Y_clean = wiz.process()
+
+wiz.read_test()
+
+X_test_clean = wiz.process_test()
