@@ -6,6 +6,9 @@
 #          Hamzeh Alsalhi <ha258@cornell.edu>
 # License: BSD 3 clause
 
+#EDIT:
+#          Koye Sodipo: Modification to line 131,149 - 154. Handles instances of new lables in .transform method.
+
 from collections import defaultdict
 import itertools
 import array
