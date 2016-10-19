@@ -1,3 +1,6 @@
+# Authors: Koye Sodipo <broskoye@hotmail.com>
+# License: BSD 3 clause
+
 import numpy
 import pandas
 import csv
