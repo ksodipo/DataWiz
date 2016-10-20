@@ -6,7 +6,7 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
 
 Capabilities: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting useless features, Handling missing values. More functionality is currently being developed.
 
-Requires: 
+<b>Requires<b>: 
 Sklearn (plus an update to the preprocessing/label.py file) 
 Pandas 
 Numpy
