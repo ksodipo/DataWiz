@@ -12,7 +12,7 @@ Pandas
 Numpy
 
 INSTALL:
-Copy the core/datawiz.py file into your project directory and import.
+Copy the core/datawiz.py file into your project directory and import. Also consider replacing the sklearn.../preprocessing/label.py file to deal with cases where a new categorical variable is found in the test set.
 
 EXAMPLE:
 
@@ -26,7 +26,8 @@ wiz = DataWiz(train_path='../.csv' ,
   missing_values='fill',
   pds_chunksize=0)
  
-X_clean, Y_clean = wiz.process()
+X_clean, Y_clean = wiz.process() #This will remove headers, split the input and target columns, determine useless features e.g. id or 
+                                 # email, and drop amy columns specified in the "exclude_cols" argument of the class instantiation.
 
 wiz.read_test()
 
