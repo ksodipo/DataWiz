@@ -1,4 +1,4 @@
-DataWiz
+**DataWiz**
 
 Any data scientist would spend upwards of 50% of the time and effort in cleansing data. How great would it be if that were fully automated? This project aims to divert 20% of our efforts away from fancy ML models and into pure cleansing to producing an ***automated and repeatable*** process for data cleansing. Let's pause for a moment, on cutting the tree with an axe, and build a chainsaw.
 
@@ -25,3 +25,19 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
     wiz.read_test()
     
     X_test_clean = wiz.process_test()
+
+**Arguments**:
+
+**train_path**: path to the .csv file containing train data
+
+**test_path**: path to the .csv file containing test data
+
+**use**: 0 or 'numpy' for reading into a numpy array. 1 or 'pandas' for reading into a pandas dataframe. List type not currently supported for processing
+
+**target_col**: the index of the target (or Y) column in the train data. Use -1 if it is the last coolumn
+
+**exclude_cols**: an array in integers corresponding to the index of columns to be dropped from the train set. A similar drop will be applied to the test set.
+
+**missing_values**: 'fill' to fill the missing values with the mode of the feature. 'drop' to drop the particular *rows* containing the missing value.  'drop' is not applied to the test set. It is applied as a 'fill' operation instead.
+
+**pds_chunksize**: used when reading the .csv file with pandas. Recommended for very large datasets. See: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_csv.html     for details.
