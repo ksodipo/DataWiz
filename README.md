@@ -41,3 +41,5 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
 **missing_values**: 'fill' to fill the missing values with the mode of the feature. 'drop' to drop the particular *rows* containing the missing value.  'drop' is not applied to the test set. It is applied as a 'fill' operation instead.
 
 **pds_chunksize**: used when reading the .csv file with pandas. Recommended for very large datasets. See: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_csv.html     for details.
+
+**advanced_ops**: this option tells the .process function to perform deeper (but potentially necessary)  data cleaning operations to prevent errors e.g. removing white space from text. Set to False to make code run faster, but True if you encounter errors.
