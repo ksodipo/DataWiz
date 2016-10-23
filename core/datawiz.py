@@ -361,5 +361,3 @@ class DataWiz:
                     
                   
                 return X_test
-
-
