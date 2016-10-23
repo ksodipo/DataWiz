@@ -1,6 +1,3 @@
-# Authors: Koye Sodipo <broskoye@hotmail.com>
-# License: BSD 3 clause
-
 import numpy
 import pandas
 import csv
@@ -11,15 +8,10 @@ from sklearn.tree import export_graphviz
 from sklearn import preprocessing
 from random import randint
 from scipy import stats
-#Need to take ownership of the read process. Read either in numpy or pandas. Reading in lists is inefficient.
-#Need memory efficient way of converting list to numpy/pandas array
 
 #Two fundamental problems with determining whether 1st row is header:
         # 1.) If all  elements (including the header) are numbers, code will think header is just any other data point
         # 2.) If all elements (including the header) are strings, code will think header is just any othe data point. This can be solved if we assume the header title is unique to the entire column (i.e. occurs only once as header). Might revisit later. CBA atm.
-#Need to figure out how to address missing values. Persistent bug.
-
-
 
 
 class DataWiz:
@@ -35,10 +27,11 @@ class DataWiz:
         self.target_column = target_col
         self.exclude_columns = exclude_cols
         self.test_split = 0.2
-        self.missing_vals = missing_values 
-        #Advanced Defult settings
+        self.missing_vals = missing_values
         self.pd_chunksize = pds_chunksize
-
+        #Advanced Defult settings (not editable through arguments)        
+        self.advance_ops = True     #Removes white space in string columns
+        
         self.array = []
         self.array_test = []
         ans = -1
@@ -71,9 +64,9 @@ class DataWiz:
                 if ans == 1 or ans == 0:
                         break
                 
-        self.use_numpy = True if self.to_use == 0 else False
-        self.use_pandas = True if self.to_use == 1 else False
-        self.use_list = True if self.to_use == 2 else False
+        self.use_numpy = True if (self.to_use == 0 or self.to_use == 'numpy') else False
+        self.use_pandas = True if (self.to_use == 1 or self.to_use == 'pandas') else False
+        self.use_list = True if (self.to_use == 2 or self.to_use == 'list') else False
 
         if self.use_numpy:
                 csv_iter = csv.reader(open(self.file_path, 'rb'))
@@ -149,11 +142,25 @@ class DataWiz:
                     ndata = self.array[0:]
                     self.header = [ str(i) for i in xrange(0,len(self.array[0])) ] #Make the header array out of indexes
 
+            #Handle missing values
+            if self.missing_vals == 'fill':
+                for column in xrange(0,len(self.array[0,0:])):
+                    if (self.col_is_categorical[index]):
+                        mode = stats.mode(ndata[column])[0][0]
+                        #ndata[column] = ndata[column].fillna(mode)
+                    else:
+                        mean = np.mean(ndata[column])
+                        #ndata[column] = ndata[column].fillna(mean)
+                        
+            elif: self.missing_vals == 'drop':
+                #ndata = ndata.dropna('rows')
 
             for column in xrange(0,len(self.array[0,0:])):
                     if (self.col_is_categorical[column]):
                             #convert to number labes using LabelEncode
                             encoder = preprocessing.LabelEncoder()
+                            if self.advance_ops:                                                #remove leading or trailing spaces
+                                ndata[:,column] = numpy.char.strip(ndata[:,column])
                             encoder.fit(ndata[:,column])
                             no_of_unique = len(encoder.classes_)
                             if float(no_of_unique)/float(len(self.array)) > 0.25:                       #if we have so many unique labels relative to the number of rows, it's probably a useless feature or an identifier (both usually) e.g. a name, ticket number, phone number, staff ID. More feature engineering usually required. Unsuprvised PCA perhaps.
@@ -214,13 +221,16 @@ class DataWiz:
             else:
                     ndata = self.array[0:]
 
-            #Handle missing values  
-            
+            #Handle missing values              
             if self.missing_vals == 'fill':
                 for index,column in enumerate(self.array.columns):
-                    mode = stats.mode(ndata.loc[:][column])[0][0]
-                    ndata[column] = ndata[column].fillna(mode)
-                                          
+                    if (self.col_is_categorical[index]):
+                        mode = stats.mode(ndata.loc[:][column])[0][0]
+                        ndata[column] = ndata[column].fillna(mode)
+                    else:
+                        mean = np.mean(ndata[column][ pandas.notnull(ndata[column] ]))
+                        ndata[column] = ndata[column].fillna(mean)
+                        
             elif: self.missing_vals == 'drop':
                 ndata = ndata.dropna('rows')
             
@@ -229,6 +239,8 @@ class DataWiz:
                     if (self.col_is_categorical[index]):
                             #convert to number labes using LabelEncode
                             encoder = preprocessing.LabelEncoder()
+                            if self.advanced_ops:
+                                ndata[column] = ndata[column].str.strip()
                             encoder.fit(ndata[column])
                             no_of_unique = len(encoder.classes_)
                             if float(no_of_unique)/float(len(self.array[column])) > 0.25:                       #if we have so many unique labels relative to the number of rows, it's probably a useless feature or an identifier (both usually) e.g. a name, ticket number, phone number, staff ID. More feature engineering usually required. Unsuprvised PCA perhaps.
@@ -329,8 +341,10 @@ class DataWiz:
                     for column in xrange(0,len(X_test[0,0:])):
                             
                             if (type(encoders_local[column]) != str):
-                                    #convert to number labes using LabelEncode
+                                    #convert to number labels using LabelEncode
                                     print column
+                                    if self.advance_ops:                                    #remove leading or trailing spaces
+                                        X_test[:,column] = np.char.strip(X_test[:,column])
                                     X_test[:,column] = encoders_local[column].transform(X_test[:,column],True)                                 #output of encoder.transform is a numpy.ndarray, FYI
 
                     array_of_col_index = [ n for n in xrange(0,len(X_test[0])) ]                                                          
@@ -346,13 +360,19 @@ class DataWiz:
                     #Handle missing values
                     if (self.missing_vals == 'fill' or self.missing_vals == 'drop' :                #Missing values shouldn't be dropped in the test set
                         for index,column in enumerate(self.array_test.columns):
-                            mode = stats.mode(X_test.loc[:][column])[0][0]
-                            X_test[column] = X_test[column].fillna(mode)
-                                          
+                            if (self.col_is_categorical[index]):
+                                mode = stats.mode(X_test.loc[:][column])[0][0]
+                                X_test[column] = X_test[column].fillna(mode)
+                            else:
+                        mean = np.mean(X_test[column][ pandas.notnull(X_test[column] ]))
+                        X_test[column] = X_test[column].fillna(mean)
+                                              
                     
                     
                     for index,column in enumerate(X_test.columns):
                             if type(encoders_local[index]) != str:
+                                    if self.advanced_ops:
+                                        X_test[column] = X_test[column].str.strip()
                                     X_test.loc[:][column] = encoders_local[index].transform(X_test[column],True) #this back references and actually modifies the ooriginal test.csv in memory
 
                     for i in adjusted_exclude_columns:
