@@ -19,7 +19,7 @@ from dateutil.parser import parse
 
 
 class DataWiz:
-    def __init__( self,train_path=None,test_path=None,use=0, target_col=None,exclude_cols=[],missing_values='fill',dt_convert=0,pds_chunksize=0):
+    def __init__( self,train_path=None,test_path=None,use=0, target_col=None,exclude_cols=[],missing_values='fill',dt_convert=1,pds_chunksize=0):
         
         #Default settings
         self.file_path = train_path
@@ -46,6 +46,9 @@ class DataWiz:
         self.col_is_datetime = []
         self.encoders = []
         self.header = []
+
+        self.dt_darray = []
+        self.dt_darray_test = []
         
         while(True):
                 try:
@@ -171,7 +174,7 @@ class DataWiz:
                 #ndata = ndata.dropna('rows')
 
             for column in xrange(0,len(self.array[0,0:])):
-                    if (self.col_is_categorical[column] and not self.col_is_datetime[column]):
+                    if (self.col_is_categorical[column] and self.col_is_datetime[column]==False):       #if it's categorical but not a date
                             #convert to number labes using LabelEncode
                             encoder = preprocessing.LabelEncoder()
                             if self.advance_ops:                                                #remove leading or trailing spaces
@@ -188,9 +191,11 @@ class DataWiz:
 
                     else:
                              self.encoders.append('Not a Category')
-                             
-                    if (self.col_is_datetime[column]):
-                        ndata[:,column] = numpy.array(  [parse(i) for i in ndata[:,column] ]  )
+
+                    #Attach a datetime object for each column. Has to be an external array as numpy arrays can't hold datetime objects
+                    if self.dt_convert == 1:
+                        if (self.col_is_datetime[column]==True):
+                            self.dt_array( numpy.array( [parse(i) for i in ndata[:,column]] ) )
 
                         
             Y = ndata[:,self.target_column]
@@ -340,6 +345,10 @@ class DataWiz:
                 encoders_local.pop(tc)                              #Now encoders local should match test columns after we've popped the encoder for the target column
                 is_header = True if True in self.header_or_not else False
                 adjusted_exclude_columns = []
+
+                is_dt_local = self.col_is_datetime
+                is_dt_local.pop(tc)
+                
                 for i in self.exclude_columns:
                             if i<tc:
                                     adjusted_exclude_columns.append(i)
@@ -348,6 +357,7 @@ class DataWiz:
                 print len(encoders_local), len(self.encoders)
                 for x in adjusted_exclude_columns:
                         encoders_local[x] = 'Dont need this'
+                        is_dt_local[x] = False
                         
                 if type(self.array_test) == numpy.ndarray:
                     
@@ -359,15 +369,18 @@ class DataWiz:
                     
                     for column in xrange(0,len(X_test[0,0:])):
                             
-                            if (type(encoders_local[column]) != str):
+                            if (type(encoders_local[column]) != str and is_dt_local[column]==False):        #If column is categorical but also a datetime, don't convert it
                                     #convert to number labels using LabelEncode
                                     print column
                                     if self.advance_ops:                                    #remove leading or trailing spaces
                                         X_test[:,column] = np.char.strip(X_test[:,column])
                                     X_test[:,column] = encoders_local[column].transform(X_test[:,column],True)                                 #output of encoder.transform is a numpy.ndarray, FYI
+                            if self.dt_convert == 1:
+                                if is_dt_local[column]==True:
+                                    self.dt_array_test( numpy.array( [parse(i) for i in X_test[:,column]] ) )
 
                     array_of_col_index = [ n for n in xrange(0,len(X_test[0])) ]                                                          
-                    X_test = X_test[ :,[i for i in array_of_col_index if (i not in adjusted_exclude_columns) ] ]                           
+                    X_test = X_test[ :,[i for i in array_of_col_index if (i not in adjusted_exclude_columns) ] ]        #Pick only the columns not listed to be excluded                      
                     
 
                 if type(self.array_test) == pandas.core.frame.DataFrame:
@@ -398,7 +411,7 @@ class DataWiz:
                             no_use = X_test.pop(i)
 
                     
-                  
+                print 'len of enc local and dt_local ',len(encoders_local),len(is_dt_local)
                 return X_test
 
 def is_datetime(arr):
@@ -418,5 +431,5 @@ def is_datetime(arr):
                         return False
 
 
-
+#wiz = DataWiz(train_path='WRITE STUFF HERE',test_path=None,use=0, target_col=None,exclude_cols=[],missing_values='fill',dt_convert=0,pds_chunksize=0)
                         
