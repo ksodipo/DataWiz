@@ -35,7 +35,7 @@ class DataWiz:
         self.pd_chunksize = pds_chunksize
         self.dt_convert = dt_convert
         #Advanced Defult settings (not editable through arguments)        
-        self.advance_ops = True     #Removes white space in string columns, datetime conversion
+        self.advanced_ops = True     #Removes white space in string columns, datetime conversion
         
         self.array = []
         self.array_test = []
@@ -177,7 +177,7 @@ class DataWiz:
                     if (self.col_is_categorical[column] and self.col_is_datetime[column]==False):       #if it's categorical but not a date
                             #convert to number labes using LabelEncode
                             encoder = preprocessing.LabelEncoder()
-                            if self.advance_ops:                                                #remove leading or trailing spaces
+                            if self.advanced_ops:                                                #remove leading or trailing spaces
                                 ndata[:,column] = numpy.char.strip(ndata[:,column])
                             encoder.fit(ndata[:,column])
                             no_of_unique = len(encoder.classes_)
@@ -195,9 +195,9 @@ class DataWiz:
                     #Attach a datetime object for each column. Has to be an external array as numpy arrays can't hold datetime objects
                     if self.dt_convert == 1:
                         if (self.col_is_datetime[column]==True):
-                            self.dt_array.append( numpy.array( [parse(i) for i in ndata[:,column]] ) )
-
-                        
+                            self.dt_array.append( numpy.array([parse(i) for i in ndata[:,column]])  )   #Or make it a numpy array: numpy.array([parse(i) for i in ndata[:,column]])
+                                                                                                        #Makes a list of numpy arrays containing datetime objects.
+                                                    
             Y = ndata[:,self.target_column]
             if self.target_column == -1:
                     self.target_column = len(self.array[0,0:])-1                                                #The extractor wouldn't recognize -1 two lines from here.
@@ -231,6 +231,9 @@ class DataWiz:
                 else:
                         self.col_is_categorical.append(False)
 
+                test_value_types.pop(0)
+                col_name = self.array.columns[column]
+                self.col_is_datetime.append(  is_datetime( self.array.loc[test_value_types][col_name] )  )              #if .loc[x][y], where x is not a single int index, y MUST be the name of the column, not simply an index
 
                     
             is_header = True if True in self.header_or_not else False           #Here we decide whether or not the data has headers
@@ -252,15 +255,19 @@ class DataWiz:
                         mode = stats.mode(ndata.loc[:][column])[0][0]
                         ndata[column] = ndata[column].fillna(mode)
                     else:
-                        mean = numpy.mean(ndata[column][ pandas.notnull(ndata[column]) ] )
-                        ndata[column] = ndata[column].fillna(mean)
+                        print column
+                        try:
+                            mean = numpy.mean(ndata[column][ pandas.notnull(ndata[column]) ] )
+                            ndata[column] = ndata[column].fillna(mean)
+                        except:
+                            TypeError
                         
             elif self.missing_vals == 'drop':
                 ndata = ndata.dropna('rows')
             
 
             for index,column in enumerate(self.array.columns):
-                    if (self.col_is_categorical[index]):
+                    if (self.col_is_categorical[index] and self.col_is_datetime[index]==False):
                             #convert to number labes using LabelEncode
                             encoder = preprocessing.LabelEncoder()
                             if self.advanced_ops:
@@ -276,6 +283,13 @@ class DataWiz:
                             # In test test, be sure to only transform where col_is_categorical AND encoder != None i.e. 1st instance of True in col_is_categorical checks ast index of encoders array. 2nd checkeck 2nd etc..
                     else:
                              self.encoders.append('Not a Category')
+
+
+                    #Attach a datetime object for each column. Has to be an external array as numpy arrays can't hold datetime objects
+                    if self.dt_convert == 1:
+                        if (self.col_is_datetime[index]==True):
+                            self.dt_array.append(  pandas.Series([parse(i) for i in ndata[column]]) )       #creates a list of pandas series containing class 'pandas.tslib.Timestamp' objects
+
             
             col_names_excl = []                                                         #Get the pandas names of columns before removing target col. 1. to preserve index. 2. Pandas doesn't like dealing with indexes. Prefers names
             for ind in self.exclude_columns:
@@ -372,7 +386,7 @@ class DataWiz:
                             if (type(encoders_local[column]) != str and is_dt_local[column]==False):        #If column is categorical but also a datetime, don't convert it
                                     #convert to number labels using LabelEncode
                                     #print column
-                                    if self.advance_ops:                                    #remove leading or trailing spaces
+                                    if self.advanced_ops:                                    #remove leading or trailing spaces
                                         X_test[:,column] = numpy.char.strip(X_test[:,column])
                                     X_test[:,column] = encoders_local[column].transform(X_test[:,column],True)                                 #output of encoder.transform is a numpy.ndarray, FYI
                             if self.dt_convert == 1:
@@ -418,7 +432,9 @@ def is_datetime(arr):
     total = len(arr)
     accum = []
     for item in arr:
+        item = str(item)
         if len(item)>=6:                #parse() mistakes strings like '13', '3' etc for dates
+            #print item
             try: 
                 parse(item)
                 accum.append(1)
@@ -429,10 +445,3 @@ def is_datetime(arr):
                         return True
     else:
                         return False
-
-
-wiz = DataWiz(train_path='C:\Users\~\Desktop\Kaggle\train.csv',test_path='C:\Users\~\Desktop\Kaggle\test.csv',use=0, target_col=-1,exclude_cols=[0],missing_values='fill',dt_convert=1,pds_chunksize=0)
-X,Y = wiz.process()
-wiz.read_test()
-wiz.process_test()
-                        
