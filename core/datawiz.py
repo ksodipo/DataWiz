@@ -47,8 +47,8 @@ class DataWiz:
         self.encoders = []
         self.header = []
 
-        self.dt_darray = []
-        self.dt_darray_test = []
+        self.dt_array = []
+        self.dt_array_test = []
         
         while(True):
                 try:
@@ -195,7 +195,7 @@ class DataWiz:
                     #Attach a datetime object for each column. Has to be an external array as numpy arrays can't hold datetime objects
                     if self.dt_convert == 1:
                         if (self.col_is_datetime[column]==True):
-                            self.dt_array( numpy.array( [parse(i) for i in ndata[:,column]] ) )
+                            self.dt_array.append( numpy.array( [parse(i) for i in ndata[:,column]] ) )
 
                         
             Y = ndata[:,self.target_column]
@@ -252,7 +252,7 @@ class DataWiz:
                         mode = stats.mode(ndata.loc[:][column])[0][0]
                         ndata[column] = ndata[column].fillna(mode)
                     else:
-                        mean = np.mean(ndata[column][ pandas.notnull(ndata[column]) ] )
+                        mean = numpy.mean(ndata[column][ pandas.notnull(ndata[column]) ] )
                         ndata[column] = ndata[column].fillna(mean)
                         
             elif self.missing_vals == 'drop':
@@ -371,13 +371,13 @@ class DataWiz:
                             
                             if (type(encoders_local[column]) != str and is_dt_local[column]==False):        #If column is categorical but also a datetime, don't convert it
                                     #convert to number labels using LabelEncode
-                                    print column
+                                    #print column
                                     if self.advance_ops:                                    #remove leading or trailing spaces
-                                        X_test[:,column] = np.char.strip(X_test[:,column])
+                                        X_test[:,column] = numpy.char.strip(X_test[:,column])
                                     X_test[:,column] = encoders_local[column].transform(X_test[:,column],True)                                 #output of encoder.transform is a numpy.ndarray, FYI
                             if self.dt_convert == 1:
                                 if is_dt_local[column]==True:
-                                    self.dt_array_test( numpy.array( [parse(i) for i in X_test[:,column]] ) )
+                                    self.dt_array_test.append( numpy.array( [parse(i) for i in X_test[:,column]] ) )
 
                     array_of_col_index = [ n for n in xrange(0,len(X_test[0])) ]                                                          
                     X_test = X_test[ :,[i for i in array_of_col_index if (i not in adjusted_exclude_columns) ] ]        #Pick only the columns not listed to be excluded                      
@@ -396,7 +396,7 @@ class DataWiz:
                                 mode = stats.mode(X_test.loc[:][column])[0][0]
                                 X_test[column] = X_test[column].fillna(mode)
                             else:
-                                mean = np.mean(X_test[column][ pandas.notnull(X_test[column]) ] )
+                                mean = numpy.mean(X_test[column][ pandas.notnull(X_test[column]) ] )
                                 X_test[column] = X_test[column].fillna(mean)
                                               
                     
@@ -431,5 +431,8 @@ def is_datetime(arr):
                         return False
 
 
-#wiz = DataWiz(train_path='WRITE STUFF HERE',test_path=None,use=0, target_col=None,exclude_cols=[],missing_values='fill',dt_convert=0,pds_chunksize=0)
+wiz = DataWiz(train_path='C:\Users\~\Desktop\Kaggle\train.csv',test_path='C:\Users\~\Desktop\Kaggle\test.csv',use=0, target_col=-1,exclude_cols=[0],missing_values='fill',dt_convert=1,pds_chunksize=0)
+X,Y = wiz.process()
+wiz.read_test()
+wiz.process_test()
                         
