@@ -4,13 +4,14 @@ Any data scientist would spend upwards of 50% of the time and effort in cleansin
 
 Automated data cleansing for Decision Tree models (and similar models). Supports numpy and pandas.
 
-**Capabilities**: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting useless features, Handling missing values. More functionality is currently being developed.
+**Capabilities**: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting & understanding date/time information, Detecting 'useless' features e.g. email addr or usernames, Handling missing values. More functionality is currently being developed.
 
 **Requires**: 
 
  - sklearn (plus an update to the preprocessing/label.py file) 
  -  pandas 
  - numpy
+ - datetime util
 
 **Install**: Copy the core/datawiz.py file into your project directory and import. Also consider replacing the sklearn.../preprocessing/label.py file to deal with cases where a new categorical variable is found in the test set.
 
@@ -41,5 +42,7 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
 **missing_values**: 'fill' to fill the missing values with the mode of the feature. 'drop' to drop the particular *rows* containing the missing value.  'drop' is not applied to the test set. It is applied as a 'fill' operation instead.
 
 **pds_chunksize**: used when reading the .csv file with pandas. Recommended for very large datasets. See: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_csv.html     for details.
+
+**dt_convert**: set to 1 to allow detection of columns containing date or time stamp values. set to 0 otherwise. default value is 1.
 
 **advanced_ops**: this option tells the .process function to perform deeper (but potentially necessary)  data cleaning operations to prevent errors e.g. removing white space from text. Set to False to make code run faster, but True if you encounter errors.
