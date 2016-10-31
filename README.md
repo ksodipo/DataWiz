@@ -46,3 +46,15 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
 **dt_convert**: set to 1 to allow detection of columns containing date or time stamp values. set to 0 otherwise. default value is 1.
 
 **advanced_ops**: this option tells the .process function to perform deeper (but potentially necessary)  data cleaning operations to prevent errors e.g. removing white space from text. Set to False to make code run faster, but True if you encounter errors.
+
+**Data Structures**
+Where the class name is "wiz", the followig arrays are created:
+
+**wiz.array**: The internal array (numpy/pandas) which is processed. Outputs from the .process() function are references to the cleaned version of this internal array
+
+**wiz.array_test**: The internal array (numpy/pandas) which is processed for the test in a similar was the train set (above) was.
+
+**wiz.dt_array**: This internal array is a list object which contains a number of numpy.ndarray or pandas.Series arrays (1-column vector of datetime or pandas.timeshamp types). i.e. dt_array = [ (numpy/pandas array of datetime variables 1), (numpy/pandas array of datetime variables 2) , (numpy/pandas array of datetime variables 3), (numpy/pandas array of datetime variables N)... ] where N is the number of colums in wiz.array that can be converted to a datetime object.
+
+**wiz.dt_array_test**: Same as above, for the test set
+
