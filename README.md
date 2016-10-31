@@ -47,7 +47,8 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
 
 **advanced_ops**: this option tells the .process function to perform deeper (but potentially necessary)  data cleaning operations to prevent errors e.g. removing white space from text. Set to False to make code run faster, but True if you encounter errors.
 
-**Data Structures**
+**Data Structures**.
+
 Where the class name is "wiz", the followig arrays are created:
 
 **wiz.array**: The internal array (numpy/pandas) which is processed. Outputs from the .process() function are references to the cleaned version of this internal array
