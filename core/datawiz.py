@@ -11,6 +11,7 @@ from sklearn.tree import export_graphviz
 from sklearn import preprocessing
 from random import randint
 from scipy import stats
+from dateutil.parser import parse
 
 # Two fundamental problems with determining whether 1st row is header:
         # 1.) If all elements (including the header) are numbers, code will think header is just any other data point
@@ -18,8 +19,12 @@ from scipy import stats
 
 
 class DataWiz:
+<<<<<<< HEAD
     
     def __init__( self,train_path=None,test_path=None,use=0, target_col=None,exclude_cols=[],missing_values='fill',pds_chunksize=0):
+=======
+    def __init__( self,train_path=None,test_path=None,use=0, target_col=None,exclude_cols=[],missing_values='fill',dt_convert=1,pds_chunksize=0):
+>>>>>>> origin/master
         
         # Default settings
         self.file_path = train_path
@@ -33,8 +38,14 @@ class DataWiz:
         self.test_split = 0.2
         self.missing_vals = missing_values
         self.pd_chunksize = pds_chunksize
+<<<<<<< HEAD
         # Advanced Defult settings (not editable through arguments)        
         self.advance_ops = True    # Removes white space in string columns
+=======
+        self.dt_convert = dt_convert
+        #Advanced Defult settings (not editable through arguments)        
+        self.advanced_ops = True     #Removes white space in string columns, datetime conversion
+>>>>>>> origin/master
         
         self.array = []
         self.array_test = []
@@ -42,13 +53,17 @@ class DataWiz:
         self.accum = []
         self.header_or_not = []
         self.col_is_categorical = []
+        self.col_is_datetime = []
         self.encoders = []
         self.header = []
+
+        self.dt_array = []
+        self.dt_array_test = []
         
         while(True):
                 try:
                         if self.file_path==None:
-                                file_path = input('Enter file path (surround with quotes)   :')
+                                self.file_path = input('Enter train file path (surround with quotes)   :')
                         if self.to_use == None:
                             self.to_use =  input('Enter 0 for numpy, 1 for pandas and 2 for list:  ')
                         if self.target_column == None:
@@ -110,14 +125,20 @@ class DataWiz:
                 self.accum = []    # assumes labels are not integers
                 for index in test_value_types:
                     try:
+<<<<<<< HEAD
                         float(self.array[0:,column][index])    # Better to use float() than int() as int('123.45') will throw a ValueError, giving the impression that we're dealing with a string
                         if self.array[0][column]=='Fare':
                                 print 'Hit',index,self.array[0:,column][index]
+=======
+                        float(self.array[0:,column][index])                             #Better to use float() than int() as int('123.45') will throw a ValueError, giving the impression that we're dealing with a string
+                        #if self.array[0][column]=='Fare':
+                         #       print 'Hit',index,self.array[0:,column][index]
+>>>>>>> origin/master
                         self.accum.append(1)
                     except:
                         ValueError
-                        if self.array[0][column]=='Fare':
-                                print 'Miss',index,self.array[0:,column][index]
+                        #if self.array[0][column]=='Fare':
+                         #       print 'Miss',index,self.array[0:,column][index]
                         self.accum.append(0)
 
                 if type(self.array[0,column]) == numpy.string_ and sum(self.accum)<41 and sum(self.accum)>0:       
@@ -131,7 +152,12 @@ class DataWiz:
                 else:
                         self.col_is_categorical.append(False)
 
+                #Decipher whether this column is datetime. Necessary to remove '0' index
+                test_value_types.pop(0)
+                self.col_is_datetime.append(  is_datetime( self.array[test_value_types,column] )  )
+                
 
+                
                     
             is_header = True if True in self.header_or_not else False    # Here we decide whether or not the data has headers
 
@@ -139,7 +165,11 @@ class DataWiz:
                 # convert the numpy columns that were incorrectly assumed to be strings (and are numbers) to numbers... Actually, this isn't necessary as the sklearn DT converts all strings to floats
                 # if header, split header from data. Then detect categorical columns. create label encoder for that
                     self.header = self.array[0]
+<<<<<<< HEAD
                     # print 'Header Row: ', self.header
+=======
+                    print 'Header Row: ', self.header
+>>>>>>> origin/master
                     
                     ndata = self.array[1:]
             else:
@@ -149,10 +179,11 @@ class DataWiz:
             # Handle missing values
             if self.missing_vals == 'fill':
                 for column in xrange(0,len(self.array[0,0:])):
-                    if (self.col_is_categorical[index]):
+                    if (self.col_is_categorical[column]):
                         mode = stats.mode(ndata[column])[0][0]
                         # ndata[column] = ndata[column].fillna(mode)
                     else:
+<<<<<<< HEAD
                         mean = np.mean(ndata[column])
                         # ndata[column] = ndata[column].fillna(mean)
                         
@@ -164,20 +195,43 @@ class DataWiz:
                             # convert to number labes using LabelEncode
                             encoder = preprocessing.LabelEncoder()
                             if self.advance_ops:    # remove leading or trailing spaces
+=======
+                        try:
+                            mean = numpy.mean(ndata[column])
+                            #ndata[column] = ndata[column].fillna(mean)
+                        except:
+                            TypeError
+                        
+            elif self.missing_vals == 'drop':
+                n=0
+                #ndata = ndata.dropna('rows')
+
+            for column in xrange(0,len(self.array[0,0:])):
+                    if (self.col_is_categorical[column] and self.col_is_datetime[column]==False):       #if it's categorical but not a date
+                            #convert to number labes using LabelEncode
+                            encoder = preprocessing.LabelEncoder()
+                            if self.advanced_ops:                                                #remove leading or trailing spaces
+>>>>>>> origin/master
                                 ndata[:,column] = numpy.char.strip(ndata[:,column])
                             encoder.fit(ndata[:,column])
                             no_of_unique = len(encoder.classes_)
                             if float(no_of_unique)/float(len(self.array)) > 0.25:   # if we have so many unique labels relative to the number of rows, it's probably a useless feature or an identifier (both usually) e.g. a name, ticket number, phone number, staff ID. More feature engineering usually required. Unsuprvised PCA perhaps.
                                     encoder = 'Column propably not useful'    # ...also, even if we accidentally rule out a legitimate feature, the metric being > 0.25  would probably be a feature that'll cause overfitting
                                     self.encoders.append(encoder)
-                                    print 'Consider dropping the column  ',self.header[column], float(no_of_unique),float(len(self.array))
+                                    print 'Consider dropping the column: ',self.header[column]          #, float(no_of_unique),float(len(self.array))
                             else:
                                     ndata[:,column] = encoder.transform(ndata[:,column])    # this back references and actually modifies array
                                     self.encoders.append(encoder)    # output of encoder.transform is a numpy.ndarray, FYI
 
                     else:
                              self.encoders.append('Not a Category')
-                             
+
+                    #Attach a datetime object for each column. Has to be an external array as numpy arrays can't hold datetime objects
+                    if self.dt_convert == 1:
+                        if (self.col_is_datetime[column]==True):
+                            self.dt_array.append( numpy.array([parse(i) for i in ndata[:,column]])  )   #Or make it a numpy array: numpy.array([parse(i) for i in ndata[:,column]])
+                                                                                                        #Makes a list of numpy arrays containing datetime objects.
+                                                    
             Y = ndata[:,self.target_column]
             if self.target_column == -1:
                     self.target_column = len(self.array[0,0:])-1    # The extractor wouldn't recognize -1 two lines from here.
@@ -211,6 +265,9 @@ class DataWiz:
                 else:
                         self.col_is_categorical.append(False)
 
+                test_value_types.pop(0)
+                col_name = self.array.columns[column]
+                self.col_is_datetime.append(  is_datetime( self.array.loc[test_value_types][col_name] )  )              #if .loc[x][y], where x is not a single int index, y MUST be the name of the column, not simply an index
 
                     
             is_header = True if True in self.header_or_not else False    # Here we decide whether or not the data has headers
@@ -232,16 +289,25 @@ class DataWiz:
                         mode = stats.mode(ndata.loc[:][column])[0][0]
                         ndata[column] = ndata[column].fillna(mode)
                     else:
-                        mean = np.mean(ndata[column][ pandas.notnull(ndata[column] ]))
-                        ndata[column] = ndata[column].fillna(mean)
+                        print column
+                        try:
+                            mean = numpy.mean(ndata[column][ pandas.notnull(ndata[column]) ] )
+                            ndata[column] = ndata[column].fillna(mean)
+                        except:
+                            TypeError
                         
-            elif: self.missing_vals == 'drop':
+            elif self.missing_vals == 'drop':
                 ndata = ndata.dropna('rows')
             
 
             for index,column in enumerate(self.array.columns):
+<<<<<<< HEAD
                     if (self.col_is_categorical[index]):
                             # convert to number labes using LabelEncode
+=======
+                    if (self.col_is_categorical[index] and self.col_is_datetime[index]==False):
+                            #convert to number labes using LabelEncode
+>>>>>>> origin/master
                             encoder = preprocessing.LabelEncoder()
                             if self.advanced_ops:
                                 ndata[column] = ndata[column].str.strip()
@@ -256,6 +322,13 @@ class DataWiz:
                             # In test test, be sure to only transform where col_is_categorical AND encoder != None i.e. 1st instance of True in col_is_categorical checks ast index of encoders array. 2nd checkeck 2nd etc..
                     else:
                              self.encoders.append('Not a Category')
+
+
+                    #Attach a datetime object for each column. Has to be an external array as numpy arrays can't hold datetime objects
+                    if self.dt_convert == 1:
+                        if (self.col_is_datetime[index]==True):
+                            self.dt_array.append(  pandas.Series([parse(i) for i in ndata[column]]) )       #creates a list of pandas series containing class 'pandas.tslib.Timestamp' objects
+
             
             col_names_excl = []    # Get the pandas names of columns before removing target col. 1. to preserve index. 2. Pandas doesn't like dealing with indexes. Prefers names
             for ind in self.exclude_columns:
@@ -325,6 +398,10 @@ class DataWiz:
                 encoders_local.pop(tc)    # Now encoders_local should match test columns after we've popped the encoder for the target column
                 is_header = True if True in self.header_or_not else False
                 adjusted_exclude_columns = []
+
+                is_dt_local = self.col_is_datetime
+                is_dt_local.pop(tc)
+                
                 for i in self.exclude_columns:
                             if i<tc:
                                     adjusted_exclude_columns.append(i)
@@ -333,6 +410,7 @@ class DataWiz:
                 print len(encoders_local), len(self.encoders)
                 for x in adjusted_exclude_columns:
                         encoders_local[x] = 'Dont need this'
+                        is_dt_local[x] = False
                         
                 if type(self.array_test) == numpy.ndarray:
                     
@@ -344,15 +422,27 @@ class DataWiz:
                     
                     for column in xrange(0,len(X_test[0,0:])):
                             
+<<<<<<< HEAD
                             if (type(encoders_local[column]) != str):
                                     # convert to number labels using LabelEncode
                                     print column
                                     if self.advance_ops:    # remove leading or trailing spaces
                                         X_test[:,column] = np.char.strip(X_test[:,column])
                                     X_test[:,column] = encoders_local[column].transform(X_test[:,column],True)    # output of encoder.transform is a numpy.ndarray, FYI
+=======
+                            if (type(encoders_local[column]) != str and is_dt_local[column]==False):        #If column is categorical but also a datetime, don't convert it
+                                    #convert to number labels using LabelEncode
+                                    #print column
+                                    if self.advanced_ops:                                    #remove leading or trailing spaces
+                                        X_test[:,column] = numpy.char.strip(X_test[:,column])
+                                    X_test[:,column] = encoders_local[column].transform(X_test[:,column],True)                                 #output of encoder.transform is a numpy.ndarray, FYI
+                            if self.dt_convert == 1:
+                                if is_dt_local[column]==True:
+                                    self.dt_array_test.append( numpy.array( [parse(i) for i in X_test[:,column]] ) )
+>>>>>>> origin/master
 
                     array_of_col_index = [ n for n in xrange(0,len(X_test[0])) ]                                                          
-                    X_test = X_test[ :,[i for i in array_of_col_index if (i not in adjusted_exclude_columns) ] ]                           
+                    X_test = X_test[ :,[i for i in array_of_col_index if (i not in adjusted_exclude_columns) ] ]        #Pick only the columns not listed to be excluded                      
                     
 
                 if type(self.array_test) == pandas.core.frame.DataFrame:
@@ -361,15 +451,20 @@ class DataWiz:
                     else:
                             q = None
 
+<<<<<<< HEAD
                     # Handle missing values
                     if (self.missing_vals == 'fill' or self.missing_vals == 'drop':    # Missing values shouldn't be dropped in the test set
+=======
+                    #Handle missing values
+                    if (self.missing_vals == 'fill' or self.missing_vals == 'drop') :                #Missing values shouldn't be dropped in the test set
+>>>>>>> origin/master
                         for index,column in enumerate(self.array_test.columns):
                             if (self.col_is_categorical[index]):
                                 mode = stats.mode(X_test.loc[:][column])[0][0]
                                 X_test[column] = X_test[column].fillna(mode)
                             else:
-                        mean = np.mean(X_test[column][ pandas.notnull(X_test[column] ]))
-                        X_test[column] = X_test[column].fillna(mean)
+                                mean = numpy.mean(X_test[column][ pandas.notnull(X_test[column]) ] )
+                                X_test[column] = X_test[column].fillna(mean)
                                               
                     
                     
@@ -383,5 +478,23 @@ class DataWiz:
                             no_use = X_test.pop(i)
 
                     
-                  
+                print 'len of enc local and dt_local ',len(encoders_local),len(is_dt_local)
                 return X_test
+
+def is_datetime(arr):
+    total = len(arr)
+    accum = []
+    for item in arr:
+        item = str(item)
+        if len(item)>=6:                #parse() mistakes strings like '13', '3' etc for dates
+            #print item
+            try: 
+                parse(item)
+                accum.append(1)
+            except ValueError:
+                accum.append(0)
+
+    if sum(accum) == total:
+                        return True
+    else:
+                        return False
