@@ -442,7 +442,7 @@ def is_datetime(arr):
     accum = []
     for item in arr:
         item = str(item)
-        if len(item)>=6:                #parse() mistakes strings like '13', '3' etc for dates
+        if len(item)>=6:    #parse() mistakes strings like '13', '3' etc for dates
             #print item
             try: 
                 parse(item)
