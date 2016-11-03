@@ -19,7 +19,7 @@ from dateutil.parser import parse
 
 
 class DataWiz:
-    def __init__( self,train_path=None,test_path=None,use=0, target_col= -99,exclude_cols=[],missing_values='fill',dt_convert=1,pds_chunksize=0):
+    def __init__( self,train_path=None,test_path=None,use=0, target_col= -99,exclude_cols=[],missing_values='fill',dt_convert=1,pds_chunksize=0,advanced_ops=True, drop_cols=False):
         
         #Default settings
         self.file_path = train_path
@@ -35,7 +35,8 @@ class DataWiz:
         self.pd_chunksize = pds_chunksize
         self.dt_convert = dt_convert
         #Advanced Defult settings (not editable through arguments)        
-        self.advanced_ops = True     #Removes white space in string columns, datetime conversion
+        self.advanced_ops = advanced_ops     #Removes white space in string columns, datetime conversion
+        self.drop_cols = drop_cols      #Specifies whether recommended columns to be dropped are actually dropped autommatically
         
         self.array = []
         self.array_test = []
@@ -185,6 +186,8 @@ class DataWiz:
                                     encoder = 'Column propably not useful'                                                          #... also, even if we accidentally rule out a legitimate feature, the metric being > 0.25  would probably be a feature that'll cause overfitting
                                     self.encoders.append(encoder)
                                     print 'Consider dropping the column: ',self.header[column]          #, float(no_of_unique),float(len(self.array))
+                                    if self.drop_cols:
+                                        self.exclude_columns.append(column)
                             else:
                                     ndata[:,column] = encoder.transform(ndata[:,column]) #this back references and actually modifies array
                                     self.encoders.append(encoder)                                    #output of encoder.transform is a numpy.ndarray, FYI
@@ -278,6 +281,8 @@ class DataWiz:
                             if float(no_of_unique)/float(len(self.array[column])) > 0.25:                       #if we have so many unique labels relative to the number of rows, it's probably a useless feature or an identifier (both usually) e.g. a name, ticket number, phone number, staff ID. More feature engineering usually required. Unsuprvised PCA perhaps.
                                     encoder = 'Category Not Relevant'                                                          #... also, even if we accidentally rule out a legitimate feature, the metric being > 0.25  would probably be a feature that'll cause overfitting
                                     print 'Consider dropping the column ',self.array.columns[index]
+                                    if self.drop_cols:
+                                        self.exclude_columns.append(index)
                             else:
                                     ndata.loc[:][column] = encoder.transform(ndata[column]) #this back references and actually modifies array           
                             self.encoders.append(encoder)                                #output of encoder.transform is a numpy.ndarray, FYI
@@ -441,9 +446,15 @@ class DataWiz:
                 print 'len of enc local and dt_local ',len(encoders_local),len(is_dt_local)
                 return X_test
 
-    def drop(self,col):
+    """def drop(self,cols):                        #arg "cols" can be a single index or array in indexes
         if not hasattr(self, "is_processed"):
             raise ValueError("DataWiz array must be processed before dropping columns.")
+        drop_indexes = []
+        if type(cols)== int:
+            drop_indexes.append(cols)
+        else:
+            drop_indexes = cols """
+            
 
 def is_datetime(arr):
     total = len(arr)
@@ -464,8 +475,5 @@ def is_datetime(arr):
                         return False
 
 
-#wiz = DataWiz(train_path='C:\Users\~ng.csv',test_path='C:\Users\~test.csv',use=0, target_col=-1,exclude_cols=[0],missing_values='fill',dt_convert=1,pds_chunksize=0)
-#X,Y = wiz.process()
-#wiz.read_test()
-#wiz.process_test()
+
                         
