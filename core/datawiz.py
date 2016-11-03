@@ -19,7 +19,7 @@ from dateutil.parser import parse
 
 
 class DataWiz:
-    def __init__( self,train_path=None,test_path=None,use=0, target_col=None,exclude_cols=[],missing_values='fill',dt_convert=1,pds_chunksize=0):
+    def __init__( self,train_path=None,test_path=None,use=0, target_col= -99,exclude_cols=[],missing_values='fill',dt_convert=1,pds_chunksize=0):
         
         #Default settings
         self.file_path = train_path
@@ -56,8 +56,8 @@ class DataWiz:
                                 self.file_path = input('Enter train file path (surround with quotes)   :')
                         if self.to_use == None:
                             self.to_use =  input('Enter 0 for numpy, 1 for pandas and 2 for list:  ')
-                        if self.target_column == None:
-                            self.target_column = input('Enter index of the the target column:  ')
+                        if self.target_column == -99:
+                            self.target_column = input('Enter index of the the target column. Enter "None" if no target:  ')
                         if self.exclude_columns == []:
                             while (True):
                                     excl = input('List the index of columns to exclude. Enter "None" to quit...')
@@ -197,8 +197,9 @@ class DataWiz:
                         if (self.col_is_datetime[column]==True):
                             self.dt_array.append( numpy.array([parse(i) for i in ndata[:,column]])  )   #Or make it a numpy array: numpy.array([parse(i) for i in ndata[:,column]])
                                                                                                         #Makes a list of numpy arrays containing datetime objects.
-                                                    
-            Y = ndata[:,self.target_column]
+            if self.target_column != 99 or self.target_column != None:
+                Y = ndata[:,self.target_column]
+                
             if self.target_column == -1:
                     self.target_column = len(self.array[0,0:])-1                                                #The extractor wouldn't recognize -1 two lines from here.
             array_of_col_index = [ n for n in xrange(0,len(self.array[0,0:])) ]                                       #get a list of all valid indexes of columns
@@ -285,7 +286,7 @@ class DataWiz:
                              self.encoders.append('Not a Category')
 
 
-                    #Attach a datetime object for each column. Has to be an external array as numpy arrays can't hold datetime objects
+                    #Attach a datetime object for each column. 
                     if self.dt_convert == 1:
                         if (self.col_is_datetime[index]==True):
                             self.dt_array.append(  pandas.Series([parse(i) for i in ndata[column]]) )       #creates a list of pandas series containing class 'pandas.tslib.Timestamp' objects
@@ -297,7 +298,9 @@ class DataWiz:
                 
             if self.target_column == -1:
                     self.target_column = len(ndata.columns)-1                                         # .pop sometimes can't deal with -1 as an index
-            Y = ndata.pop(self.array.columns[self.target_column])
+
+            if self.target_column != 99 or self.target_column != None:
+                Y = ndata.pop(self.array.columns[self.target_column])
 
             
             for i in col_names_excl:
@@ -306,7 +309,8 @@ class DataWiz:
             gc.collect()
             X = ndata
             
-          
+        self.is_processed = True
+        
         return X,Y    #This is great because X is only a reference to the array object created outside of the function
                         #Our previous setting of ndata to an index of array persists as a global rule. If global array modified out of func, ndata, X changes too.
 
@@ -382,6 +386,8 @@ class DataWiz:
                             
                     
                     for column in xrange(0,len(X_test[0,0:])):
+                            if index in adjusted_exclude_columns:               #no point processing columns we will later exclude
+                                continue
                             
                             if (type(encoders_local[column]) != str and is_dt_local[column]==False):        #If column is categorical but also a datetime, don't convert it
                                     #convert to number labels using LabelEncode
@@ -416,10 +422,17 @@ class DataWiz:
                     
                     
                     for index,column in enumerate(X_test.columns):
-                            if type(encoders_local[index]) != str:
+                            if index in adjusted_exclude_columns:                   #no point processing columns we will later exclude
+                                continue
+                            
+                            if type(encoders_local[index]) != str and is_dt_local[index]==False:
                                     if self.advanced_ops:
                                         X_test[column] = X_test[column].str.strip()
                                     X_test.loc[:][column] = encoders_local[index].transform(X_test[column],True) #this back references and actually modifies the ooriginal test.csv in memory
+                            #Attach a datetime object for each column. 
+                            if self.dt_convert == 1:
+                                if (self.col_is_datetime[index]==True):
+                                    self.dt_array_test.append(  pandas.Series([parse(i) for i in X_test[column]]) ) 
 
                     for i in adjusted_exclude_columns:
                             no_use = X_test.pop(i)
@@ -427,6 +440,10 @@ class DataWiz:
                     
                 print 'len of enc local and dt_local ',len(encoders_local),len(is_dt_local)
                 return X_test
+
+    def drop(self,col):
+        if not hasattr(self, "is_processed"):
+            raise ValueError("DataWiz array must be processed before dropping columns.")
 
 def is_datetime(arr):
     total = len(arr)
@@ -445,3 +462,10 @@ def is_datetime(arr):
                         return True
     else:
                         return False
+
+
+#wiz = DataWiz(train_path='C:\Users\~ng.csv',test_path='C:\Users\~test.csv',use=0, target_col=-1,exclude_cols=[0],missing_values='fill',dt_convert=1,pds_chunksize=0)
+#X,Y = wiz.process()
+#wiz.read_test()
+#wiz.process_test()
+                        
