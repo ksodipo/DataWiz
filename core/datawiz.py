@@ -114,7 +114,7 @@ class DataWiz:
             if self.pd_chunksize > 0:
                 self.array = None
                 for i, chunk in enumerate(pandas.read_csv(
-                        self.file_path, chunksize=self.pd_chunksize)):
+                        self.file_path, chunksize=self.pd_chunksize, low_memory=False)):
                     if self.array is None:
                         self.array = chunk.copy()  # not simply a reference to it
                     else:
@@ -396,14 +396,15 @@ class DataWiz:
                             [parse(i) for i in ndata[column]]))
 
             col_names_excl = []  # Get the pandas names of columns before removing target col. 1. to preserve index. 2. Pandas doesn't like dealing with indexes. Prefers names
-            for ind in self.exclude_columns:
-                col_names_excl.append(ndata.columns[ind])
+            if self.exclude_columns != None:
+                for ind in self.exclude_columns:
+                    col_names_excl.append(ndata.columns[ind])
 
             if self.target_column == -1:
                 # .pop sometimes can't deal with -1 as an index
                 self.target_column = len(ndata.columns) - 1
 
-            if self.target_column != 99 or self.target_column is not None:
+            if self.target_column != -99 or self.target_column != None:
                 Y = ndata.pop(self.array.columns[self.target_column])
 
             for i in col_names_excl:
@@ -590,4 +591,6 @@ def is_datetime(arr):
         return True
     else:
         return False
+
+
 
