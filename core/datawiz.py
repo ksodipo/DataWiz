@@ -403,13 +403,15 @@ class DataWiz:
             if self.target_column == -1:
                 # .pop sometimes can't deal with -1 as an index
                 self.target_column = len(ndata.columns) - 1
-
+            Y = []
             if self.target_column != -99 and self.target_column != None:
                 Y = ndata.pop(self.array.columns[self.target_column])
 
+            #disposing of columns not needed, considering memory
             for i in col_names_excl:
                 garbage = ndata.pop(i)
-            del garbage
+                del garbage
+            
             gc.collect()
             X = ndata
 
@@ -591,5 +593,6 @@ def is_datetime(arr):
         return True
     else:
         return False
+
 
 
