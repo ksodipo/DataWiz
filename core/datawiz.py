@@ -49,12 +49,18 @@ class DataWiz:
         self.missing_vals = missing_values
         self.pd_chunksize = pds_chunksize
         self.dt_convert = dt_convert
-        # Advanced Defult settings (not editable through arguments)
+        
         # Removes white space in string columns, datetime conversion
         self.advanced_ops = advanced_ops
         # Specifies whether recommended columns to be dropped are actually
         # dropped autommatically
         self.drop_cols = drop_cols
+        
+        # Advanced Defult settings (not editable through arguments)
+
+        # should the date parser consider the first number group ('09') in '09/12/2010' as the day?
+        self.dayfirst = True
+
 
         self.array = []
         self.array_test = []
@@ -229,7 +235,7 @@ class DataWiz:
                     no_of_unique = len(encoder.classes_)
                     # if we have so many unique labels relative to the number
                     # of rows, it's probably a useless feature or an identifier
-                    # (both usually) e.g. a name, ticket number, phone number,
+                    # (both usually) e.g. a name, a product description, ticket number, phone number,
                     # staff ID. More feature engineering usually required.
                     # Unsuprvised PCA perhaps.
                     if float(no_of_unique) / float(len(self.array)) > 0.25:
@@ -256,7 +262,7 @@ class DataWiz:
                         # Or make it a numpy array: numpy.array([parse(i) for i
                         # in ndata[:,column]])
                         self.dt_array.append(numpy.array(
-                            [parse(i) for i in ndata[:, column]]))
+                            [parse(i,dayfirst=self.dayfirst) for i in ndata[:, column]]))
                         # Makes a list of numpy arrays containing datetime
                         # objects.
             if self.target_column != 99 or self.target_column is not None:
@@ -393,7 +399,7 @@ class DataWiz:
                         # creates a list of pandas series containing class
                         # 'pandas.tslib.Timestamp' objects
                         self.dt_array.append(pandas.Series(
-                            [parse(i) for i in ndata[column]]))
+                            [parse(i,dayfirst=self.dayfirst) for i in ndata[column]]))
 
             col_names_excl = []  # Get the pandas names of columns before removing target col. 1. to preserve index. 2. Pandas doesn't like dealing with indexes. Prefers names
             if self.exclude_columns != None:
@@ -514,7 +520,7 @@ class DataWiz:
                 if self.dt_convert == 1:
                     if is_dt_local[column]:
                         self.dt_array_test.append(numpy.array(
-                            [parse(i) for i in X_test[:, column]]))
+                            [parse(i,dayfirst=self.dayfirst) for i in X_test[:, column]]))
 
             array_of_col_index = [n for n in xrange(0, len(X_test[0]))]
             # Pick only the columns not listed to be excluded
@@ -558,7 +564,7 @@ class DataWiz:
                 if self.dt_convert == 1:
                     if (self.col_is_datetime[index]):
                         self.dt_array_test.append(pandas.Series(
-                            [parse(i) for i in X_test[column]]))
+                            [parse(i,dayfirst=self.dayfirst) for i in X_test[column]]))
 
             for i in adjusted_exclude_columns:
                 no_use = X_test.pop(i)
@@ -593,6 +599,3 @@ def is_datetime(arr):
         return True
     else:
         return False
-
-
-
