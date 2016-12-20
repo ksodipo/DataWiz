@@ -47,6 +47,8 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
 
 **advanced_ops**: this option tells the .process function to perform deeper (but potentially necessary)  data cleaning operations to prevent errors e.g. removing white space from text. Set to False to make code run faster, but True if you encounter errors.
 
+**drop_cols**: Specifies whether recommended columns to be dropped are actually dropped autommatically. DataWiz detects columns with potentially irrelevant information for ML models e.g usernames, phone numbers etc. and recommends the user drop them.
+
 **Data Structures**.
 
 Where the class name is "wiz", the followig arrays are created:
