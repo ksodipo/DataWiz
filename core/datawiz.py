@@ -95,8 +95,7 @@ class DataWiz:
 
                 ans = 1
             except:
-                NameError
-                print('Please enter valid answers')
+                raise NameError('Please enter valid answers')
 
             if ans == 1 or ans == 0:
                 break
@@ -162,13 +161,13 @@ class DataWiz:
                         # we're dealing with a string
                         float(self.array[0:, column][index])
                         # if self.array[0][column]=='Fare':
-                        #       print 'Hit',index,self.array[0:,column][index]
+                        # print('Hit',index,self.array[0:,column][index])
                         self.accum.append(1)
                     except:
-                        raise ValueError
                         # if self.array[0][column]=='Fare':
                         #       print 'Miss',index,self.array[0:,column][index]
                         self.accum.append(0)
+                        raise ValueError
 
                 if isinstance(self.array[0, column], numpy.string_) and sum(self.accum) < 41 and sum(self.accum) > 0:
                     # This logic fails though, if the entire dataset is made of
@@ -208,11 +207,20 @@ class DataWiz:
             else:
                 ndata = self.array[0:]
                 # Make the header array out of indexes
-                self.header = [str(i) for i in xrange(0, len(self.array[0]))]
+                try:
+                    self.header = [str(i) for i in xrange(0, len(self.array[0]))]
+                except NameError:
+                    self.header = [str(i) for i in range(0, len(self.array[0]))]
 
             # Handle missing values
             if self.missing_vals == 'fill':
-                for column in xrange(0, len(self.array[0, 0:])):
+
+                try:
+                    rng = xrange(0, len(self.array[0, 0:]))
+                except NameError:
+                    rng = range(0, len(self.array[0, 0:]))
+
+                for column in rng:
                     if self.col_is_categorical[column]:
                         mode = stats.mode(ndata[column])[0][0]
                         # ndata[column] = ndata[column].fillna(mode)
@@ -227,7 +235,12 @@ class DataWiz:
                 n = 0
                 # ndata = ndata.dropna('rows')
 
-            for column in xrange(0, len(self.array[0, 0:])):
+            try:
+                rng = xrange(0, len(self.array[0, 0:]))
+            except NameError:
+                rng = range(0, len(self.array[0, 0:]))
+
+            for column in rng:
                 # if it's categorical but not a date
                 if self.col_is_categorical[column] and self.col_is_datetime[column] is False:
                     # convert to number labels using LabelEncode
@@ -276,19 +289,34 @@ class DataWiz:
                 # The extractor wouldn't recognize -1 two lines from here.
                 self.target_column = len(self.array[0, 0:]) - 1
             # get a list of all valid indexes of columns
-            array_of_col_index = [n for n in xrange(0, len(self.array[0, 0:]))]
+
+            try:
+                array_of_col_index = [n for n in xrange(0, len(self.array[0, 0:]))]
+            except NameError:
+                array_of_col_index = [n for n in range(0, len(self.array[0, 0:]))]
+
             # this way, we only extract the train columns
             X = ndata[:, [i for i in array_of_col_index if (
                 i != self.target_column and i not in self.exclude_columns)]]
 
             ##########################################################################
         if isinstance(self.array, pandas.core.frame.DataFrame):
-            for column in xrange(0, len(self.array.columns)):  # Test each column
+
+            try:
+                rng = xrange(0, len(self.array.columns))
+            except NameError:
+                rng = range(0, len(self.array.columns))
+
+            for column in rng:  # Test each column
                 # initialize an array of 40 valid indexes to randomly sample in
                 # a given column. We reset the first value of the array to 0 to
                 # test the potential header row
-                test_value_types = [randint(1, len(self.array) - 1)
-                                    for i in xrange(0, 41)]
+
+                try:
+                    test_value_types = [randint(1, len(self.array) - 1) for i in xrange(0, 41)]
+                except NameError:
+                    test_value_types = [randint(1, len(self.array) - 1) for i in range(0, 41)]
+
                 test_value_types[0] = 0
                 self.accum = []  # assumes labels are not integers
                 for index in test_value_types:
@@ -400,7 +428,10 @@ class DataWiz:
                         self.dt_array.append(pandas.Series(
                             [parse(i, dayfirst=self.dayfirst) for i in ndata[column]]))
 
-            col_names_excl = []  # Get the pandas names of columns before removing target col. 1. to preserve index. 2. Pandas doesn't like dealing with indexes. Prefers names
+            # Get the pandas names of columns before removing target col. 1. to preserve index. 2. Pandas doesn't like
+            # dealing with indexes. Prefers names
+            col_names_excl = []
+
             if self.exclude_columns is not None:
                 for ind in self.exclude_columns:
                     col_names_excl.append(ndata.columns[ind])
