@@ -1,4 +1,12 @@
-**DataWiz**
+#DataWiz
+
+         ______       _____    _________    _____     ____       ___    ____   _________
+        |   _  \     /     \  |__    ___|  /     \    |   |  _  |   |  |   |  |______   |
+        |  | |  |   /  /_\  \    |  |     /  /_\  \   |   | / \ |   |  |   |       /  /
+        |  | |  |  |   __   |    |  |    |   __   |   |   |/   \|   |  |   |      /  /
+        |  |_|  |  |  |  |  |    |  |    |  |  |  |   |      /\     |  |   |     /  / ____   
+        |______/   |__|  |__|    |__|    |__|  |__|   |_____/  \____|  |___|   |_________|
+
 
 Any data scientist would spend upwards of 50% of the time and effort in cleansing data. How great would it be if that were fully automated? This project aims to divert 20% of our efforts away from fancy ML models and into pure cleansing to producing an ***automated and repeatable*** process for data cleansing. Let's pause for a moment, on cutting the tree with an axe, and build a chainsaw.
 
