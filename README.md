@@ -24,7 +24,7 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
 **Install**: Copy the core/datawiz.py file into your project directory and import. Also consider replacing the sklearn.../preprocessing/label.py file to deal with cases where a new categorical variable is found in the test set.
 
 **EXAMPLE**:
-
+```python
     import DataWiz
     
     wiz = DataWiz(train_path='../.csv' , test_path='../.csv', use='numpy', target_col=-1, exclude_cols=[1,2,3], missing_values='fill', pds_chunksize=0)
@@ -34,6 +34,7 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
     wiz.read_test()
     
     X_test_clean = wiz.process_test()
+```
 
 **Arguments**:
 
