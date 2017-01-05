@@ -26,13 +26,12 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
 **EXAMPLE**:
 ```python
 import DataWiz
-
-wiz = DataWiz(train_path='../.csv' , test_path='../.csv', use='numpy', target_col=-1, exclude_cols=[1,2,3], missing_values='fill', pds_chunksize=0)
-
-X_clean, Y_clean = wiz.process() #This will remove headers, split the input and target columns, determine useless features e.g. id or # email, and drop amy columns specified in the "exclude_cols" argument of the class instantiation.
-
+wiz = DataWiz(train_path='../.csv' , test_path='../.csv', use='numpy', target_col=-1, exclude_cols=[1,2,3],
+              missing_values='fill', pds_chunksize=0)
+X_clean, Y_clean = wiz.process() # This will remove headers, split the input and target columns,
+                                 # determine useless features e.g. id or # email, and drop amy columns
+                                 # specified in the "exclude_cols" argument of the class instantiation.
 wiz.read_test()
-
 X_test_clean = wiz.process_test()
 ```
 
