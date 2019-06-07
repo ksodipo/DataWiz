@@ -1,9 +1,8 @@
 from distutils.core import setup
 setup(
-  name = 'DataWiz',         
-  packages = ['DataWiz'],   
+  name = 'datawiz',         
+  packages = ['datawiz'],   
   version = '0.3',      
-  #license='BSD-3-Clause',        
   description = 'DataWiz helps new data learners, hobbyist and industry practitioners write Machine Learning code faster by doing the heavy-lifting such as data cleaning, data transformation, preparation and more! ',   # Give a short description about your library
   author = 'Koye Sodipo',                   
   author_email = 'koye.sodipo@gmail.com',      
@@ -25,5 +24,6 @@ setup(
     'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7'
   ],
 )
