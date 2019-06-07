@@ -19,7 +19,7 @@ from dateutil.parser import parse
 # header).
 
 
-class DataWiz:
+class datawiz:
     def __init__(
             self,
             train_path=None,
@@ -622,7 +622,7 @@ class DataWiz:
 
     """def drop(self,cols):                        #arg "cols" can be a single index or array in indexes
         if not hasattr(self, "is_processed"):
-            raise ValueError("DataWiz array must be processed before dropping columns.")
+            raise ValueError("datawiz array must be processed before dropping columns.")
         drop_indexes = []
         if type(cols)== int:
             drop_indexes.append(cols)
