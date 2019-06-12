@@ -12,12 +12,12 @@ Any data scientist would spend upwards of 50% of the time and effort in cleansin
 
 Automated data cleansing for Decision Tree models (and similar models). Supports numpy and pandas.
 
-**Capabilities**: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting & understanding date/time information, Detecting 'useless' features e.g. email addr or usernames, Handling missing values. More functionality is currently being developed.
+**Capabilities**: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting & understanding date/time information, Detecting 'uninformaive or non-predictive' features e.g. email addr or usernames, Handling missing values. More functionality is currently being developed.
 
 **Requires**: 
 
  - sklearn (plus an update to the preprocessing/label.py file) 
- -  pandas 
+ - pandas 
  - numpy
  - datetime util
 
@@ -30,14 +30,26 @@ Conda installation not available at present.
 
 **EXAMPLE**:
 ```python
-import DataWiz
-wiz = DataWiz(train_path='../.csv' , test_path='../.csv', use='numpy', target_col=-1, exclude_cols=[1,2,3],
-              missing_values='fill', pds_chunksize=0)
-X_clean, Y_clean = wiz.process() # This will remove headers, split the input and target columns,
-                                 # determine useless features e.g. id or # email, and drop amy columns
+import datawiz as dw
+
+# 2 main functions exist
+# 1st funtion, '.prescrbe' will load an excel file, classify and print columns into: numerical, categorical, datetime or #'uninformative.' 
+'''It will also return the loaded data and 4 list items: 
+col_is_categorical (boolean list same length as the number of columns, True when column is categorical)
+col_is_datetime (boolean list same length as the number of columns, True when column tells date and time) 
+col_low_info (list of strings with the column names of uninformative columns. Recommended to drop these before using an ML algo)
+col_good_info (list of strings with the column names of columns containing good info. Must be encoded before using an ML algo)
+'''
+
+train_data, col_categorical, col_datetime, col_low_info, col_good_info = dw.prescribe(train_path='../.csv' , test_path='../.csv', pds_chunksize=0)
+              
+X_clean,Y_clean,[encoders, encoded_cols],[dt_arrays, dt_cols] = 
+dw.process(train_path=None,test_path=None,target_col=-99,exclude_cols=[],missing_values='fill',pds_chunksize=0,data_has_ws = True,encode_categories=True,dt_convert=True,drop_low_info_cols=True) 
+                                 # This will remove headers, split the input and target columns,
+                                 # remove useless features e.g. id or # email, and drop any columns
                                  # specified in the "exclude_cols" argument of the class instantiation.
-wiz.read_test()
-X_test_clean = wiz.process_test()
+                                 # Returns the encoders and encoded columns (both list objects) which specify the LabelEncode object and                                  # the name of the encoded column respectively. This should be used to encode columns in the test data
+
 ```
 
 **Arguments**:
@@ -46,31 +58,17 @@ X_test_clean = wiz.process_test()
 
 **test_path**: path to the .csv file containing test data
 
-**use**: 0 or 'numpy' for reading into a numpy array. 1 or 'pandas' for reading into a pandas dataframe. List type not currently supported for processing
+**target_col**: the column index of the target (or Y) column in the train data. Use -1 if it is the last coolumn
 
-**target_col**: the index of the target (or Y) column in the train data. Use -1 if it is the last coolumn
-
-**exclude_cols**: an array in integers corresponding to the index of columns to be dropped from the train set. A similar drop will be applied to the test set.
+**exclude_cols**: an array in integers corresponding to the index of columns to be dropped from the train set. A similar drop will be applied to the test set. 
 
 **missing_values**: 'fill' to fill the missing values with the mode of the feature. 'drop' to drop the particular *rows* containing the missing value.  'drop' is not applied to the test set. It is applied as a 'fill' operation instead.
 
 **pds_chunksize**: used when reading the .csv file with pandas. Recommended for very large datasets. See: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_csv.html     for details.
 
-**dt_convert**: set to 1 to allow detection of columns containing date or time stamp values. set to 0 otherwise. default value is 1.
+**encode_categories**: set to True to allow automatic encoding of categorical columns into numbers e.g. 'Spring', 'Summer', 'Autumn' -->> 1,2,3
 
-**advanced_ops**: this option tells the .process function to perform deeper (but potentially necessary)  data cleaning operations to prevent errors e.g. removing white space from text. Set to False to make code run faster, but True if you encounter errors.
+**dt_convert**: set to True to allow detection of columns containing date or time stamp values. If True, a list of [dt_array, dt_cols] is returned, where dt_array is a list containing the date_time columns (in pandas.Series) from the data. dt_cols specifies the corresponding colum name 
 
-**drop_cols**: Specifies whether recommended columns to be dropped are actually dropped autommatically. DataWiz detects columns with potentially irrelevant information for ML models e.g usernames, phone numbers etc. and recommends the user drop them.
-
-**Data Structures**.
-
-Where the class name is "wiz", the followig arrays are created:
-
-**wiz.array**: The internal array (numpy/pandas) which is processed. Outputs from the .process() function are references to the cleaned version of this internal array
-
-**wiz.array_test**: The internal array (numpy/pandas) which is processed for the test in a similar was the train set (above) was.
-
-**wiz.dt_array**: This internal array is a list object which contains a number of numpy.ndarray or pandas.Series arrays (1-column vector of datetime or pandas.timeshamp types). i.e. dt_array = [ (numpy/pandas array of datetime variables 1), (numpy/pandas array of datetime variables 2) , (numpy/pandas array of datetime variables 3), (numpy/pandas array of datetime variables N)... ] where N is the number of colums in wiz.array that can be converted to a datetime object.
-
-**wiz.dt_array_test**: Same as above, for the test set
+**drop_low_info_cols**: Set to True/False. Specifies whether recommended columns to be dropped are actually dropped autommatically. DataWiz detects columns with potentially irrelevant information for ML models e.g usernames, phone numbers etc. and recommends the user drop them.
 
