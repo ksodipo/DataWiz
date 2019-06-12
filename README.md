@@ -21,7 +21,12 @@ Automated data cleansing for Decision Tree models (and similar models). Supports
  - numpy
  - datetime util
 
-**Install**: Copy the core/datawiz.py file into your project directory and import. Also consider replacing the sklearn.../preprocessing/label.py file to deal with cases where a new categorical variable is found in the test set.
+**Install**: 
+You can install binaries from the Python Package Index via:
+
+```pip install datawiz```
+
+Conda installation not available at present.
 
 **EXAMPLE**:
 ```python
