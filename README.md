@@ -56,10 +56,15 @@ dw.process(train_path=None,test_path=None,target_col=-99,exclude_cols=[],missing
  
  dw.process: 
  X_clean = Pandas.DataFrame object containing input data (with target column removed)
+ 
  Y_clean = target variable i.e. variable to be predicted, in Pandas format
+ 
  encoders = A list of LabelEncode objects
+ 
  encoded_columns = A list of column names e.g. ['col1','col x','col y'] such that the column names correspond to the LabelEncode objects in the encoders array above
+ 
  dt_arrays = A list of pandas Datetime series
+ 
  dt_cols = A list of column names such that each columnn name corresponds to the Datetime object in the dt_arrays list
  
 **Arguments**:
