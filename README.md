@@ -52,9 +52,10 @@ dw.process(train_path=None,test_path=None,target_col=-99,exclude_cols=[],missing
 
 ```
 **Return Values**
- dw.prescribe: (see above)
+
+ **dw.prescribe**: (see above)
  
- dw.process: 
+ **dw.process**: 
  X_clean = Pandas.DataFrame object containing input data (with target column removed)
  
  Y_clean = target variable i.e. variable to be predicted, in Pandas format
