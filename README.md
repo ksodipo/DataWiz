@@ -34,7 +34,7 @@ import datawiz as dw
 
 # 2 main functions exist
 # 1st funtion, '.prescrbe' will load an excel file, classify and print columns into: numerical, categorical, datetime or #'uninformative.' 
-'''It will also return the loaded data and 4 list items: 
+'''It will also return the loaded data (train_data in e.g. below) and 4 list items: 
 col_is_categorical (boolean list same length as the number of columns, True when column is categorical)
 col_is_datetime (boolean list same length as the number of columns, True when column tells date and time) 
 col_low_info (list of strings with the column names of uninformative columns. Recommended to drop these before using an ML algo)
@@ -51,7 +51,17 @@ dw.process(train_path=None,test_path=None,target_col=-99,exclude_cols=[],missing
                                  # Returns the encoders and encoded columns (both list objects) which specify the LabelEncode object and                                  # the name of the encoded column respectively. This should be used to encode columns in the test data
 
 ```
-
+**Return Values**
+ dw.prescribe: (see above)
+ 
+ dw.process: 
+ X_clean = Pandas.DataFrame object containing input data (with target column removed)
+ Y_clean = target variable i.e. variable to be predicted, in Pandas format
+ encoders = A list of LabelEncode objects
+ encoded_columns = A list of column names e.g. ['col1','col x','col y'] such that the column names correspond to the LabelEncode objects in the encoders array above
+ dt_arrays = A list of pandas Datetime series
+ dt_cols = A list of column names such that each columnn name corresponds to the Datetime object in the dt_arrays list
+ 
 **Arguments**:
 
 **train_path**: path to the .csv file containing train data
