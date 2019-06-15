@@ -12,6 +12,27 @@ Any data scientist would spend upwards of 50% of the time and effort in cleansin
 
 Automated data cleansing for Decision Tree models (and similar models). Built on top of the Pandas stack.
 
+<table>
+<tr>
+  <td>Latest Release</td>
+  <td>
+    <a href="https://pypi.org/project/datawiz/">
+    <img src="https://img.shields.io/badge/pip-v0.9-blue.svg" alt="latest release" />
+    </a>
+  </td>
+</tr>
+  
+
+  <td>License</td>
+  <td>
+    <a href="https://github.com/pandas-dev/pandas/blob/master/LICENSE">
+    <img src="https://img.shields.io/pypi/l/pandas.svg" alt="license" />
+    </a>
+</td>
+</tr>
+
+</table>
+
 **Capabilities**: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting & understanding date/time information, Detecting 'uninformaive or non-predictive' features e.g. email addr or usernames, Handling missing values. Automatically cleaning & transforming train and test data in a single function. More functionality is currently being developed.
 
 **Requires**: 
