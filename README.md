@@ -43,7 +43,7 @@ col_good_info (list of strings with the column names of columns containing good 
 
 train_data, col_categorical, col_datetime, col_low_info, col_good_info = dw.prescribe(train_path='../.csv' , test_path='../.csv', pds_chunksize=0)
               
-X_clean,Y_clean,[encoders, encoded_cols],[dt_arrays, dt_cols] = 
+X_clean,Y_clean,X_test,[encoders, encoded_cols],[dt_arrays, dt_cols] = 
 dw.process(train_path=None,test_path=None,target_col=-99,exclude_cols=[],missing_values='fill',pds_chunksize=0,data_has_ws = True,encode_categories=True,dt_convert=True,drop_low_info_cols=True) 
                                  # This will remove headers, split the input and target columns,
                                  # remove useless features e.g. id or # email, and drop any columns
@@ -56,9 +56,12 @@ dw.process(train_path=None,test_path=None,target_col=-99,exclude_cols=[],missing
  **dw.prescribe**: (see above)
  
  **dw.process**: 
- X_clean = Pandas.DataFrame object containing input data (with target column removed)
  
- Y_clean = target variable i.e. variable to be predicted, in Pandas format
+ X_clean = Pandas.DataFrame object containing input/training data (with target column removed) and specified data preparation operations applied
+ 
+ Y_clean = target variable in input/training data i.e. variable to be predicted, in Pandas format
+ 
+ X_test = test data with specified data cleaning operations applied
  
  encoders = A list of LabelEncode objects
  
