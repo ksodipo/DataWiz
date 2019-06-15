@@ -8,11 +8,11 @@
         |______/   |__|  |__|    |__|    |__|  |__|   |_____/  \____|  |___|   |_________|
 
 
-Any data scientist would spend upwards of 50% of the time and effort in cleansing data. How great would it be if that were fully automated? This project aims to divert 20% of our efforts away from fancy ML models and into pure cleansing to producing an ***automated and repeatable*** process for data cleansing. Let's pause for a moment, on cutting the tree with an axe, and build a chainsaw.
+Any data scientist would spend upwards of 50% of the time and effort in cleansing data. How great would it be if that were fully automated? This project aims to focus not on ML models but on every other aspect of data cleaning and processing, producing an ***automated and repeatable*** process for data cleansing. 
 
-Automated data cleansing for Decision Tree models (and similar models). Supports numpy and pandas.
+Automated data cleansing for Decision Tree models (and similar models). Built on top of the Pandas stack.
 
-**Capabilities**: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting & understanding date/time information, Detecting 'uninformaive or non-predictive' features e.g. email addr or usernames, Handling missing values. More functionality is currently being developed.
+**Capabilities**: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting & understanding date/time information, Detecting 'uninformaive or non-predictive' features e.g. email addr or usernames, Handling missing values. Automatically cleaning & transforming train and test data in a single function. More functionality is currently being developed.
 
 **Requires**: 
 
