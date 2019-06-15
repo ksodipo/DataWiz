@@ -25,9 +25,9 @@ Automated data cleansing for Decision Tree models (and similar models). Built on
 
   <td>License</td>
   <td>
-    
+    <a>
     <img src="https://img.shields.io/badge/license-MIT-orange.svg" alt="license" />
-    </a>
+         </a>
 </td>
 </tr>
 
