@@ -25,8 +25,8 @@ Automated data cleansing for Decision Tree models (and similar models). Built on
 
   <td>License</td>
   <td>
-    <a href="https://github.com/pandas-dev/pandas/blob/master/LICENSE">
-    <img src="https://img.shields.io/pypi/l/pandas.svg" alt="license" />
+    
+    <img src="https://img.shields.io/badge/license-MIT-orange.svg" alt="license" />
     </a>
 </td>
 </tr>
