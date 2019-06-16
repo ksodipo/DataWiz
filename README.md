@@ -1,9 +1,5 @@
 #DataWiz
-<a>
-<div align="center">
-  <img src="https://github.com/ksodipo/DataWiz/blob/master/assets/img/datawiz_img.JPG"><br>
-</div>
-</a>
+
          ______       _____    _________    _____     ____       ___    ____   _________
         |   _  \     /     \  |__    ___|  /     \    |   |  _  |   |  |   |  |______   |
         |  | |  |   /  /_\  \    |  |     /  /_\  \   |   | / \ |   |  |   |       /  /
