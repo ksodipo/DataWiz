@@ -1,8 +1,3 @@
-<a>
-         <div align="center">
-                  <img src="https://github.com/ksodipo/DataWiz/blob/master/assets/img/datawiz_img.JPG"><br>
-         </div>
-</a>
 #DataWiz
 
          ______       _____    _________    _____     ____       ___    ____   _________
@@ -47,6 +42,11 @@ Automated data cleansing for Decision Tree models (and similar models). Built on
 
 **Capabilities**: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting & understanding date/time information, Detecting 'uninformaive or non-predictive' features e.g. email addr or usernames, Handling missing values. Automatically cleaning & transforming train and test data in a single function. More functionality is currently being developed.
 
+<a>
+         <div align="center">
+                  <img src="https://github.com/ksodipo/DataWiz/blob/master/assets/img/datawiz_img.JPG"><br>
+         </div>
+</a>
 
 **Requires**: 
 
