@@ -1,3 +1,8 @@
+<a>
+         <div align="center">
+                  <img src="https://github.com/ksodipo/DataWiz/blob/master/assets/img/datawiz_img.JPG"><br>
+         </div>
+</a>
 #DataWiz
 
          ______       _____    _________    _____     ____       ___    ____   _________
