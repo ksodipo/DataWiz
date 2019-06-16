@@ -21,8 +21,15 @@ Automated data cleansing for Decision Tree models (and similar models). Built on
     </a>
   </td>
 </tr>
-  
-
+<tr>
+  <td>Release Status</td>
+  <td>
+    <a>
+    <img src="https://img.shields.io/badge/status-beta-brightgreen.svg" alt="status" />
+    </a>
+  </td>
+</tr>
+<tr>
   <td>License</td>
   <td>
     <a>
@@ -72,6 +79,26 @@ dw.process(train_path=None,test_path=None,target_col=-99,exclude_cols=[],missing
                                  # Returns the encoders and encoded columns (both list objects) which specify the LabelEncode object and                                  # the name of the encoded column respectively. This should be used to encode columns in the test data
 
 ```
+
+**Quick Use Example**
+
+Perform all data cleaning and modelling in 4 lines:
+```python
+import datawiz as dw
+from sklearn.tree import DecisionTreeClassifier
+import pandas as pd
+
+X_clean, Y_clean, X_test, e, d = dw.process(train_path='C:/Users/.../Downloads/data_folder/train.csv',
+                                test_path='C:/Users/.../Downloads/data_folder/test.csv',
+                                exclude_cols=[0],target_col=1,
+                                dt_convert=True)
+
+model = DecisionTreeClassifier()
+
+model.fit(X,Y)
+
+predictions = model.predict(X_test)
+```
 **Return Values**
 
  **dw.prescribe**: (see above)
@@ -84,7 +111,7 @@ dw.process(train_path=None,test_path=None,target_col=-99,exclude_cols=[],missing
  
  X_test = test data with specified data cleaning operations applied
  
- encoders = A list of LabelEncode objects
+ encoders = A list of LabelEncode objects. 
  
  encoded_columns = A list of column names e.g. ['col1','col x','col y'] such that the column names correspond to the LabelEncode objects in the encoders array above
  
