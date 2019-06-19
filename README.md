@@ -40,7 +40,7 @@ Automated data cleansing for Decision Tree models (and similar models). Built on
 
 </table>
 
-**Capabilities**: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting & understanding date/time information, Detecting 'uninformaive or non-predictive' features e.g. email addr or usernames, Handling missing values. Automatically cleaning & transforming train and test data in a single function. More functionality is currently being developed.
+**Capabilities**: Detecting Categorical columns and auto-encoding them, Detecting and removing headers from data, Detecting & understanding date/time information, Detecting 'uninformaive or non-predictive' features e.g. email addr or usernames, Handling missing values. Automatically cleaning & transforming train and test data in a single function. More functionality is currently being developed. DataWiz allows you clean all your data in one line as shown below:
 
 <a>
          <div align="center">
@@ -144,4 +144,6 @@ predictions = model.predict(X_test)
 **dt_convert**: set to True to allow detection of columns containing date or time stamp values. If True, a list of [dt_array, dt_cols] is returned, where dt_array is a list containing the date_time columns (in pandas.Series) from the data. dt_cols specifies the corresponding colum name 
 
 **drop_low_info_cols**: Set to True/False. Specifies whether recommended columns to be dropped are actually dropped autommatically. DataWiz detects columns with potentially irrelevant information for ML models e.g usernames, phone numbers etc. and recommends the user drop them.
+
+**data_has_ws**: If your text (categorical)data has whitespaces i.e. space before or after text, set this argument to True. It trims off the whitespace so that ' record ' and 'record' are seen as the same.
 
