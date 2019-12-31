@@ -94,14 +94,14 @@ import datawiz as dw
 from sklearn.tree import DecisionTreeClassifier
 import pandas as pd
 
-X_clean, Y_clean, X_test, e, d = dw.process(train_path='C:/Users/.../Downloads/data_folder/train.csv',
+X_clean, Y_clean, X_test, [encoders, encoded_cols],[dt_arrays, dt_cols] = dw.process(train_path='C:/Users/.../Downloads/data_folder/train.csv',
                                 test_path='C:/Users/.../Downloads/data_folder/test.csv',
                                 exclude_cols=[0],target_col=1,
                                 dt_convert=True)
 
 model = DecisionTreeClassifier()
 
-model.fit(X,Y)
+model.fit(X_clean,Y_clean)
 
 predictions = model.predict(X_test)
 ```
