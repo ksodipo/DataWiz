@@ -25,7 +25,7 @@ Automated data cleansing for Decision Tree models (and similar models). Built on
   <td>Release Status</td>
   <td>
     <a>
-    <img src="https://img.shields.io/badge/status-beta-brightgreen.svg" alt="status" />
+    <img src="https://img.shields.io/badge/status-stable-brightgreen" alt="status" />
     </a>
   </td>
 </tr>
